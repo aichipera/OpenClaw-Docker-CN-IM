@@ -13,20 +13,38 @@ ENV BUN_INSTALL="/usr/local" \
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     bash \
+    bat \
     ca-certificates \
+    ccze \
     chromium \
     curl \
+    dnsutils \
+    dstat \
+    fd-find \
     fonts-liberation \
     fonts-noto-cjk \
     fonts-noto-color-emoji \
     git \
     gosu \
+    htop \
+    httpie \
+    iotop \
     jq \
+    lsof \
+    miller \
+    mtr \
+    multitail \
+    ncdu \
     python3 \
+    ripgrep \
+    shellcheck \
     socat \
     tini \
+    tree \
     unzip \
-    websockify && \
+    vim \
+    websockify \
+    wget && \
     # 更新 npm 并安装全局包
     npm install -g npm@latest && \
     npm install -g openclaw@2026.3.2 opencode-ai@latest playwright playwright-extra puppeteer-extra-plugin-stealth @steipete/bird && \
