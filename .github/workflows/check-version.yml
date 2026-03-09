@@ -18,8 +18,10 @@ jobs:
 
     outputs:
       has_new_version: ${{ steps.check.outputs.has_new_version }}
-      new_version: ${{ steps.check.outputs.new_version }}
+      latest_version: ${{ steps.check.outputs.latest_version }}
       current_version: ${{ steps.check.outputs.current_version }}
+      publish_time: ${{ steps.check.outputs.publish_time }}
+      commit_time: ${{ steps.check.outputs.commit_time }}
 
     steps:
       - name: 检查是否为 dev 分支
@@ -49,8 +51,8 @@ jobs:
         if: steps.branch-check.outputs.is_dev == 'true'
         id: check
         run: |
-          CURRENT_VERSION="${{ steps.current.outputs.current_version }}"
-
+          CURRENT_VERSION=$(cat version.txt | tr -d '[:space:]')
+          
           # 从 npm 获取最新版本信息
           LATEST_INFO=$(curl -s "$REGISTRY_NPM/$PACKAGE_NAME/latest")
           LATEST_VERSION=$(echo "$LATEST_INFO" | jq -r '.version')
@@ -58,38 +60,40 @@ jobs:
           # 获取完整包信息以获取发布时间
           PACKAGE_INFO=$(curl -s "$REGISTRY_NPM/$PACKAGE_NAME")
           PUBLISH_TIME=$(echo "$PACKAGE_INFO" | jq -r ".time[\"$LATEST_VERSION\"]")
-
+          
+          # 获取当前 commit 的提交时间
+          COMMIT_TIME=$(git log -1 --format=%aI)
+          
           echo "latest_version=$LATEST_VERSION" >> $GITHUB_OUTPUT
           echo "publish_time=$PUBLISH_TIME" >> $GITHUB_OUTPUT
+          echo "commit_time=$COMMIT_TIME" >> $GITHUB_OUTPUT
+          echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
 
           echo "📦 npm 最新版本：$LATEST_VERSION"
-          echo "📅 发布时间：$PUBLISH_TIME"
+          echo "📅 npm 发布时间：$PUBLISH_TIME"
+          echo "📅 当前 commit 时间：$COMMIT_TIME"
+          echo "📦 当前 version.txt 版本：$CURRENT_VERSION"
 
-          # 将版本号转换为可比较的格式 (2026.3.8 -> 20260308)
-          version_to_number() {
-            echo "$1" | awk -F. '{printf "%04d%02d%02d", $1, $2, $3}'
-          }
+          # 比较时间：如果 npm 发布时间比 commit 时间新，说明有新版本
+          # 将时间转换为秒数进行比较
+          PUBLISH_TS=$(date -d "$PUBLISH_TIME" +%s 2>/dev/null || echo "0")
+          COMMIT_TS=$(date -d "$COMMIT_TIME" +%s 2>/dev/null || echo "0")
 
-          CURRENT_NUM=$(version_to_number "$CURRENT_VERSION")
-          LATEST_NUM=$(version_to_number "$LATEST_VERSION")
+          echo "🔢 npm 发布时间戳：$PUBLISH_TS"
+          echo "🔢 commit 时间戳：$COMMIT_TS"
 
-          echo "🔢 当前版本数值：$CURRENT_NUM"
-          echo "🔢 最新版本数值：$LATEST_NUM"
-
-          if [ "$LATEST_NUM" -gt "$CURRENT_NUM" ]; then
-            echo "✅ 发现新版本！"
+          if [ "$PUBLISH_TS" -gt "$COMMIT_TS" ]; then
+            echo "✅ npm 版本发布时间比当前 commit 新！"
             echo "has_new_version=true" >> $GITHUB_OUTPUT
-            echo "new_version=$LATEST_VERSION" >> $GITHUB_OUTPUT
-            echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
           else
-            echo "ℹ️ 已是最新版本"
+            echo "ℹ️ 当前 commit 已经是最新的"
             echo "has_new_version=false" >> $GITHUB_OUTPUT
           fi
 
       - name: 更新 version.txt 并推送
         if: steps.check.outputs.has_new_version == 'true'
         run: |
-          NEW_VERSION="${{ steps.check.outputs.new_version }}"
+          NEW_VERSION="${{ steps.check.outputs.latest_version }}"
           CURRENT_VERSION="${{ steps.check.outputs.current_version }}"
 
           git config user.name "github-actions[bot]"
