@@ -21,9 +21,15 @@ RUN apt-get update && \
     dnsutils \
     dstat \
     fd-find \
+    ffmpeg \
     fonts-liberation \
     fonts-noto-cjk \
     fonts-noto-color-emoji \
+    build-essential \
+    imagemagick \
+    poppler-utils \
+    procps \
+    openssh-client \
     git \
     gosu \
     htop \
@@ -35,6 +41,7 @@ RUN apt-get update && \
     mtr \
     multitail \
     ncdu \
+    pipx \
     python3 \
     ripgrep \
     shellcheck \
@@ -47,7 +54,7 @@ RUN apt-get update && \
     wget && \
     # 更新 npm 并安装全局包
     npm install -g npm@latest && \
-    npm install -g openclaw@2026.3.2 opencode-ai@latest playwright playwright-extra puppeteer-extra-plugin-stealth @steipete/bird && \
+    npm install -g openclaw@2026.3.8 opencode-ai@latest playwright playwright-extra puppeteer-extra-plugin-stealth @steipete/bird @qwen-code/qwen-code@latest && \
     # 安装 bun 和 qmd
     curl -fsSL https://bun.sh/install | BUN_INSTALL=/usr/local bash && \
     /usr/local/bin/bun install -g @tobilu/qmd && \
@@ -64,9 +71,11 @@ RUN mkdir -p /home/node/.openclaw/workspace /home/node/.openclaw/extensions && \
 
 USER node
 ENV HOME=/home/node
+ENV PATH="/home/node/.local/bin:$PATH"
 WORKDIR /home/node
 
-RUN cd /home/node/.openclaw/extensions && \
+RUN pipx install 'markitdown[all]' && \
+    cd /home/node/.openclaw/extensions && \
   git clone --depth 1 https://github.com/soimy/openclaw-channel-dingtalk.git dingtalk && \
   cd dingtalk && \
   npm install --omit=dev --legacy-peer-deps && \
