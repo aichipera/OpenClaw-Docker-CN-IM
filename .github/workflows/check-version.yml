@@ -1,0 +1,111 @@
+name: Check OpenClaw New Version
+
+on:
+  schedule:
+    # 每天 UTC 时间 00:00 运行（北京时间 08:00）
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+env:
+  REGISTRY_NPM: https://registry.npmjs.org
+  PACKAGE_NAME: openclaw
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    outputs:
+      has_new_version: ${{ steps.check.outputs.has_new_version }}
+      new_version: ${{ steps.check.outputs.new_version }}
+      current_version: ${{ steps.check.outputs.current_version }}
+
+    steps:
+      - name: 检查是否为 dev 分支
+        id: branch-check
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/dev" ]; then
+            echo "is_dev=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_dev=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 检出代码
+        if: steps.branch-check.outputs.is_dev == 'true'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: 获取当前版本
+        if: steps.branch-check.outputs.is_dev == 'true'
+        id: current
+        run: |
+          CURRENT_VERSION=$(cat version.txt | tr -d '[:space:]')
+          echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          echo "📦 当前版本：$CURRENT_VERSION"
+
+      - name: 获取 openclaw 最新版本
+        if: steps.branch-check.outputs.is_dev == 'true'
+        id: check
+        run: |
+          CURRENT_VERSION="${{ steps.current.outputs.current_version }}"
+
+          # 从 npm 获取最新版本信息
+          LATEST_INFO=$(curl -s "$REGISTRY_NPM/$PACKAGE_NAME/latest")
+          LATEST_VERSION=$(echo "$LATEST_INFO" | jq -r '.version')
+          PUBLISH_TIME=$(echo "$LATEST_INFO" | jq -r '.time')
+
+          echo "latest_version=$LATEST_VERSION" >> $GITHUB_OUTPUT
+          echo "publish_time=$PUBLISH_TIME" >> $GITHUB_OUTPUT
+
+          echo "📦 npm 最新版本：$LATEST_VERSION"
+          echo "📅 发布时间：$PUBLISH_TIME"
+
+          # 将版本号转换为可比较的格式 (2026.3.8 -> 20260308)
+          version_to_number() {
+            echo "$1" | awk -F. '{printf "%04d%02d%02d", $1, $2, $3}'
+          }
+
+          CURRENT_NUM=$(version_to_number "$CURRENT_VERSION")
+          LATEST_NUM=$(version_to_number "$LATEST_VERSION")
+
+          echo "🔢 当前版本数值：$CURRENT_NUM"
+          echo "🔢 最新版本数值：$LATEST_NUM"
+
+          if [ "$LATEST_NUM" -gt "$CURRENT_NUM" ]; then
+            echo "✅ 发现新版本！"
+            echo "has_new_version=true" >> $GITHUB_OUTPUT
+            echo "new_version=$LATEST_VERSION" >> $GITHUB_OUTPUT
+            echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "ℹ️ 已是最新版本"
+            echo "has_new_version=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 更新 version.txt 并推送
+        if: steps.check.outputs.has_new_version == 'true'
+        run: |
+          NEW_VERSION="${{ steps.check.outputs.new_version }}"
+          CURRENT_VERSION="${{ steps.check.outputs.current_version }}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # 更新 version.txt
+          echo "$NEW_VERSION" > version.txt
+
+          # 更新 Dockerfile 中的 openclaw 版本
+          sed -i "s/openclaw@$CURRENT_VERSION/openclaw@$NEW_VERSION/g" \
+              Dockerfile
+
+          git add version.txt Dockerfile
+          git commit -m "chore: 更新 openclaw 至 v${NEW_VERSION}" \
+              -m "- 当前版本：${CURRENT_VERSION}" \
+              -m "- 新版本：${NEW_VERSION}" \
+              -m "- 自动检测更新"
+
+          git push
+
+          echo "✅ 已更新 version.txt 和 Dockerfile 至版本 $NEW_VERSION"
+          echo "🚀 推送后将自动触发 docker-build-push.yml workflow"
