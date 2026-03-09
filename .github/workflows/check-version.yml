@@ -52,18 +52,19 @@ jobs:
         id: check
         run: |
           CURRENT_VERSION=$(cat version.txt | tr -d '[:space:]')
-          
+
           # 从 npm 获取最新版本信息
           LATEST_INFO=$(curl -s "$REGISTRY_NPM/$PACKAGE_NAME/latest")
           LATEST_VERSION=$(echo "$LATEST_INFO" | jq -r '.version')
-          
+
           # 获取完整包信息以获取发布时间
           PACKAGE_INFO=$(curl -s "$REGISTRY_NPM/$PACKAGE_NAME")
-          PUBLISH_TIME=$(echo "$PACKAGE_INFO" | jq -r ".time[\"$LATEST_VERSION\"]")
-          
+          PUBLISH_TIME=$(echo "$PACKAGE_INFO" \
+            | jq -r ".time[\"$LATEST_VERSION\"]")
+
           # 获取当前 commit 的提交时间
           COMMIT_TIME=$(git log -1 --format=%aI)
-          
+
           echo "latest_version=$LATEST_VERSION" >> $GITHUB_OUTPUT
           echo "publish_time=$PUBLISH_TIME" >> $GITHUB_OUTPUT
           echo "commit_time=$COMMIT_TIME" >> $GITHUB_OUTPUT
@@ -72,7 +73,7 @@ jobs:
           echo "📦 npm 最新版本：$LATEST_VERSION"
           echo "📅 npm 发布时间：$PUBLISH_TIME"
           echo "📅 当前 commit 时间：$COMMIT_TIME"
-          echo "📦 当前 version.txt 版本：$CURRENT_VERSION"
+          echo "📦 当前 version.txt: $CURRENT_VERSION"
 
           # 比较时间：如果 npm 发布时间比 commit 时间新，说明有新版本
           # 将时间转换为秒数进行比较
