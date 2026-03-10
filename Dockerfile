@@ -75,6 +75,7 @@ ENV PATH="/home/node/.local/bin:$PATH"
 WORKDIR /home/node
 
 RUN pipx install 'markitdown[all]' && \
+    pipx install ddgs[api] && \
     cd /home/node/.openclaw/extensions && \
   git clone --depth 1 https://github.com/soimy/openclaw-channel-dingtalk.git dingtalk && \
   cd dingtalk && \
