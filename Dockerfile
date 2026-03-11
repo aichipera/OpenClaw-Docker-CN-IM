@@ -17,12 +17,14 @@ RUN apt-get update && \
     chromium \
     curl \
     build-essential \
+    ffmpeg \
     fonts-liberation \
     fonts-noto-cjk \
     fonts-noto-color-emoji \
     git \
     gosu \
     jq \
+    locales \
     openssh-client \
     procps \
     python3 \
@@ -30,6 +32,10 @@ RUN apt-get update && \
     tini \
     unzip \
     websockify && \
+    sed -i 's/^# *en_US.UTF-8 UTF-8$/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+    locale-gen && \
+    # update-locale 在部分 slim 基础镜像中会返回 invalid locale settings，这里改为直接写入默认 locale 配置
+    printf 'LANG=en_US.UTF-8\nLANGUAGE=en_US:en\nLC_ALL=en_US.UTF-8\n' > /etc/default/locale && \
     # 配置 git 使用 HTTPS 替代 SSH
     git config --system url."https://github.com/".insteadOf ssh://git@github.com/ && \
     # 更新 npm 并安装全局包
@@ -67,12 +73,16 @@ RUN cd /home/node/.openclaw/extensions && \
   npm install --production && \
   timeout 300 openclaw plugins install -l . || true && \
   cd /home/node/.openclaw && \
-  git clone --depth 1 https://github.com/justlovemaki/qqbot.git && \
+  git clone https://github.com/sliverp/qqbot.git && \
   cd qqbot && \
+  timeout 300 bash ./scripts/upgrade.sh || true && \
   timeout 300 openclaw plugins install . || true && \
   timeout 300 openclaw plugins install @sunnoy/wecom || true && \
+  # 为飞书官方插件 CLI 预置最小配置，避免 update 阶段因缺少 channels.feishu.appId/appSecret 报错
+  mkdir -p /home/node/.openclaw && \
+  printf '{\n  "channels": {\n    "feishu": {\n      "enabled": false,\n      "appId": "2222222222222222",\n      "appSecret": "1111111111111111",\n      "accounts": {\n        "default": {\n          "appId": "2222222222222222",\n          "appSecret": "1111111111111111",\n          "botName": "OpenClaw Bot"\n        }\n      }\n    }\n  }\n}\n' > /home/node/.openclaw/openclaw.json && \
   # 预执行安装命令（容器内需手动交互，此处仅作声明或环境准备）
-  # feishu-plugin-onboard install && \
+  feishu-plugin-onboard update && \
   find /home/node/.openclaw/extensions -name ".git" -type d -exec rm -rf {} + && \
   rm -rf /home/node/.openclaw/qqbot/.git && \
   rm -rf /tmp/* /home/node/.npm /home/node/.cache
@@ -88,7 +98,10 @@ RUN sed -i 's/\r$//' /usr/local/bin/init.sh && \
 # 设置环境变量
 ENV HOME=/home/node \
     TERM=xterm-256color \
-    NODE_PATH=/usr/local/lib/node_modules
+    NODE_PATH=/usr/local/lib/node_modules \
+    LANG=en_US.UTF-8 \
+    LANGUAGE=en_US:en \
+    LC_ALL=en_US.UTF-8
 
 # 暴露端口
 EXPOSE 18789 18790

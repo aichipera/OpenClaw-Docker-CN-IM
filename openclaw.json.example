@@ -135,6 +135,8 @@
       "streamMode": "partial"
     },
     "feishu": {
+      "appId": "your-app-id",
+      "appSecret": "your-app-secret",
       "enabled": true,
       "dmPolicy": "open",
       "allowFrom": ["*"],
@@ -172,35 +174,49 @@
       "clientSecret": "your-qqbot-client-secret",
       "dmPolicy": "open",
       "allowFrom": ["*"],
-      "groupPolicy": "open"
+      "groupPolicy": "open",
+      "accounts": {
+        "default": {
+          "enabled": true,
+          "appId": "111111111",
+          "clientSecret": "secret-of-bot-1"
+        },
+        "bot2": {
+          "enabled": true,
+          "appId": "222222222",
+          "clientSecret": "secret-of-bot-2"
+        },
+        "bot3": {
+          "enabled": true,
+          "appId": "333333333",
+          "clientSecret": "secret-of-bot-3"
+        }
+      }
     },
     "wecom": {
       "enabled": true,
-      "dmPolicy": "open",
-      "allowFrom": ["*"],
-      "groupPolicy": "open",
-      "bot1": {
-        "token": "Bot1 的 Token",
-        "encodingAesKey": "Bot1 的 EncodingAESKey",
-        "adminUsers": ["admin1"],
+      "defaultAccount": "open",
+      "adminUsers": ["admin-userid"],
+      "commands": {
+        "enabled": true,
+        "allowlist": ["/new", "/compact", "/help", "/status"]
+      },
+      "open": {
+        "botId": "aib-open-xxx",
+        "secret": "secret-open-xxx",
+        "dmPolicy": "open"
+      },
+      "support": {
+        "botId": "aib-support-xxx",
+        "secret": "secret-support-xxx",
+        "dmPolicy": "pairing",
         "agent": {
-          "corpId": "企业 CorpID",
-          "corpSecret": "Bot1 应用 Secret",
-          "agentId": 1000001,
-          "token": "Bot1 回调 Token",
-          "encodingAesKey": "Bot1 回调 EncodingAESKey"
+          "corpId": "wwxxxxxxxxxxxxxxxx",
+          "corpSecret": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "agentId": 1000002
         },
         "webhooks": {
-          "ops-group": "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=xxx"
-        }
-      },
-      "bot2": {
-        "token": "Bot2 的 Token",
-        "encodingAesKey": "Bot2 的 EncodingAESKey",
-        "agent": {
-          "corpId": "企业 CorpID",
-          "corpSecret": "Bot2 应用 Secret",
-          "agentId": 1000002
+          "ops": "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=xxx"
         }
       }
     }
