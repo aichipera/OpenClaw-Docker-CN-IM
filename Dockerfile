@@ -17,7 +17,9 @@ RUN apt-get update && \
     ca-certificates \
     ccze \
     chromium \
+    cron \
     curl \
+    diffutils \
     dnsutils \
     dstat \
     fd-find \
@@ -27,6 +29,9 @@ RUN apt-get update && \
     fonts-noto-color-emoji \
     build-essential \
     imagemagick \
+    less \
+    netcat-openbsd \
+    net-tools \
     poppler-utils \
     procps \
     openssh-client \
@@ -43,15 +48,20 @@ RUN apt-get update && \
     ncdu \
     pipx \
     python3 \
+    redis-tools \
     ripgrep \
+    rsync \
     shellcheck \
     socat \
+    sqlite3 \
+    supervisor \
     tini \
     tree \
     unzip \
     vim \
     websockify \
-    wget && \
+    wget \
+    zip && \
     # 更新 npm 并安装全局包
     npm install -g npm@latest && \
     npm install -g openclaw@2026.3.8 opencode-ai@latest playwright playwright-extra puppeteer-extra-plugin-stealth @steipete/bird @qwen-code/qwen-code@latest && \
