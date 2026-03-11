@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'version.txt'
+      - 'Dockerfile'
     branches:
       - main
       - master
