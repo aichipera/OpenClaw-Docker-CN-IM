@@ -16,6 +16,10 @@ jobs:
     permissions:
       contents: write
 
+    env:
+      # 使用 PAT 推送以触发其他工作流（GITHUB_TOKEN 推送不会触发 Actions）
+      GH_PAT: ${{ secrets.GH_PAT }}
+
     outputs:
       has_new_version: ${{ steps.check.outputs.has_new_version }}
       latest_version: ${{ steps.check.outputs.latest_version }}
@@ -113,7 +117,8 @@ jobs:
               -m "- 新版本：${NEW_VERSION}" \
               -m "- 自动检测更新"
 
-          git push
+          # 使用 PAT 推送以触发 docker-build-push.yml
+          git push https://${GH_PAT}@github.com/${{ github.repository }}.git HEAD:${{ github.ref_name }}
 
           echo "✅ 已更新 version.txt 和 Dockerfile 至版本 $NEW_VERSION"
           echo "🚀 推送后将自动触发 docker-build-push.yml workflow"
