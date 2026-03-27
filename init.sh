@@ -56,7 +56,10 @@ sync_seed_extensions() {
             ;;
         overwrite)
             echo "=== 同步内置插件（强制覆盖） ==="
-            find "$target_dir" -mindepth 1 -maxdepth 1 ! -name '.seed-version' -exec rm -rf {} +
+            # 仅删除 seed 中存在的同名项，以保留用户自行添加的其他插件
+            find "$seed_dir" -mindepth 1 -maxdepth 1 ! -name '.seed-version' | while IFS= read -r seed_item; do
+                rm -rf "$target_dir/$(basename "$seed_item")"
+            done
             cp -a "$seed_dir"/. "$target_dir"/
             ;;
         seed-version|versioned|"")
@@ -86,7 +89,10 @@ sync_seed_extensions() {
             else
                 echo "镜像内置 seed 版本: 未标记，执行覆盖同步"
             fi
-            find "$target_dir" -mindepth 1 -maxdepth 1 ! -name '.seed-version' -exec rm -rf {} +
+            # 仅删除 seed 中存在的同名项，以保留用户自行添加的其他插件
+            find "$seed_dir" -mindepth 1 -maxdepth 1 ! -name '.seed-version' | while IFS= read -r seed_item; do
+                rm -rf "$target_dir/$(basename "$seed_item")"
+            done
             cp -a "$seed_dir"/. "$target_dir"/
             ;;
         *)
