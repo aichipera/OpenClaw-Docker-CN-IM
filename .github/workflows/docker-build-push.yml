@@ -9,6 +9,10 @@ on:
       - main
       - master
       - dev
+  schedule:
+    # 每天 UTC 时间 0:30 运行（北京时间 8:30）
+    # 比 check-version.yml 晚 30 分钟，确保有足够时间处理版本更新
+    - cron: '30 0 * * *'
   workflow_dispatch:
 
 env:
@@ -57,6 +61,49 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: 检查镜像是否已存在（仅定时任务）
+        id: check_exists
+        if: github.event_name == 'schedule'
+        run: |
+          VERSION=$(cat version.txt | tr -d '[:space:]')
+          echo "🔍 检查 version.txt 中的版本：$VERSION"
+
+          # 根据分支确定 tag
+          if [ "${{ github.ref }}" == "refs/heads/dev" ]; then
+            TAG="dev-$VERSION"
+          else
+            TAG="$VERSION"
+          fi
+
+          DOCKERHUB_IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO }}:$TAG"
+          GHCR_IMAGE="${{ env.REGISTRY_GHCR }}/${{ github.repository }}:$TAG"
+
+          echo "🔍 检查镜像是否存在..."
+          echo "  Docker Hub: $DOCKERHUB_IMAGE"
+          echo "  GHCR: $GHCR_IMAGE"
+
+          EXISTS=false
+
+          # 检查 Docker Hub
+          if docker manifest inspect "$DOCKERHUB_IMAGE" > /dev/null 2>&1; then
+            echo "✅ Docker Hub 镜像已存在：$DOCKERHUB_IMAGE"
+            EXISTS=true
+          fi
+
+          # 检查 GHCR
+          if docker manifest inspect "$GHCR_IMAGE" > /dev/null 2>&1; then
+            echo "✅ GHCR 镜像已存在：$GHCR_IMAGE"
+            EXISTS=true
+          fi
+
+          echo "exists=$EXISTS" >> $GITHUB_OUTPUT
+
+          if [ "$EXISTS" = "true" ]; then
+            echo "⏭️  版本 $VERSION 已构建，跳过本次构建。"
+          else
+            echo "🆕 版本 $VERSION 未构建，开始构建..."
+          fi
+
       - name: 提取 Docker 元数据
         id: meta
         uses: docker/metadata-action@v5
@@ -70,6 +117,7 @@ jobs:
             type=sha,prefix={{branch}}-
 
       - name: 构建并推送 Docker 镜像
+        if: github.event_name != 'schedule' || steps.check_exists.outputs.exists != 'true'
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -82,6 +130,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: 输出镜像信息
+        if: github.event_name != 'schedule' || steps.check_exists.outputs.exists != 'true'
         run: |
           echo "✅ Docker 镜像构建并推送成功！"
           echo ""
@@ -90,5 +139,14 @@ jobs:
           echo ""
           echo "🔖 版本号：${{ steps.version.outputs.version }}"
           echo ""
+          echo "📦 Docker Hub: ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO }}:${{ steps.version.outputs.tag }}"
+          echo "📦 GHCR: ${{ env.REGISTRY_GHCR }}/${{ github.repository }}:${{ steps.version.outputs.tag }}"
+
+      - name: 跳过构建提示（仅定时任务）
+        if: github.event_name == 'schedule' && steps.check_exists.outputs.exists == 'true'
+        run: |
+          echo "⏭️  镜像已存在，跳过构建。"
+          echo ""
+          echo "🔖 版本号：${{ steps.version.outputs.version }}"
           echo "📦 Docker Hub: ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO }}:${{ steps.version.outputs.tag }}"
           echo "📦 GHCR: ${{ env.REGISTRY_GHCR }}/${{ github.repository }}:${{ steps.version.outputs.tag }}"
