@@ -10,70 +10,29 @@ ENV BUN_INSTALL="/usr/local" \
     DEBIAN_FRONTEND=noninteractive
 
 # 1. 合并系统依赖安装与全局工具安装，并清理缓存
+# 1. 安装系统依赖
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    bash \
-    bat \
-    ca-certificates \
-    ccze \
-    chromium \
-    cron \
-    curl \
-    diffutils \
-    dnsutils \
-    dstat \
-    fd-find \
-    ffmpeg \
-    fonts-liberation \
-    fonts-noto-cjk \
-    fonts-noto-color-emoji \
-    build-essential \
-    imagemagick \
-    less \
-    netcat-openbsd \
-    net-tools \
-    poppler-utils \
-    procps \
-    openssh-client \
-    git \
-    gosu \
-    htop \
-    httpie \
-    iotop \
-    jq \
-    lsof \
-    miller \
-    mtr \
-    multitail \
-    ncdu \
-    pipx \
-    python3 \
-    redis-tools \
-    ripgrep \
-    rsync \
-    shellcheck \
-    socat \
-    sqlite3 \
-    supervisor \
-    tini \
-    tree \
-    unzip \
-    vim \
-    websockify \
-    wget \
-    zip && \
-    # 更新 npm 并安装全局包
-    npm install -g npm@latest && \
-    npm install -g openclaw@2026.3.31 opencode-ai@latest playwright playwright-extra puppeteer-extra-plugin-stealth @steipete/bird @qwen-code/qwen-code@latest && \
-    # 安装 bun 和 qmd
-    curl -fsSL https://bun.sh/install | BUN_INSTALL=/usr/local bash && \
+    bash bat ca-certificates ccze chromium cron curl diffutils dnsutils dstat fd-find ffmpeg \
+    fonts-liberation fonts-noto-cjk fonts-noto-color-emoji build-essential imagemagick less \
+    netcat-openbsd net-tools poppler-utils procps openssh-client git gosu htop httpie iotop jq \
+    lsof miller mtr multitail ncdu pipx python3 redis-tools ripgrep rsync shellcheck socat sqlite3 \
+    supervisor tini tree unzip vim websockify wget zip && \
+    rm -rf /var/lib/apt/lists/*
+
+# 2. 安装 npm 全局包
+RUN npm install -g npm@latest openclaw@2026.3.31 opencode-ai@latest playwright playwright-extra puppeteer-extra-plugin-stealth @steipete/bird @qwen-code/qwen-code@latest
+
+# 3. 安装 bun 和 qmd
+RUN curl -fsSL https://bun.sh/install | BUN_INSTALL=/usr/local bash && \
     /usr/local/bin/bun install -g @tobilu/qmd && \
-    # 安装 Playwright 浏览器依赖
-    npx playwright install chromium --with-deps && \
-    # 清理 apt 缓存
-    apt-get purge -y --auto-remove && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /root/.npm /root/.cache
+    rm -rf /tmp/*
+
+# 4. 安装 Playwright Chromium 浏览器
+RUN npx playwright install chromium --with-deps
+
+# 5. 清理缓存
+RUN rm -rf /root/.npm /root/.cache
 
 # 2. 插件安装（作为 node 用户以避免后期权限修复带来的镜像膨胀）
 RUN mkdir -p /home/node/.openclaw/workspace /home/node/.openclaw/extensions && \
