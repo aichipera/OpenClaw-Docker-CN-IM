@@ -21,7 +21,8 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # 2. 安装 npm 全局包
-RUN npm install -g npm@latest openclaw@2026.3.31 opencode-ai@latest playwright playwright-extra puppeteer-extra-plugin-stealth @steipete/bird @qwen-code/qwen-code@latest
+RUN npm config set registry https://registry.npmmirror.com && \
+    npm install -g openclaw@2026.3.31 opencode-ai@latest playwright playwright-extra puppeteer-extra-plugin-stealth @steipete/bird @qwen-code/qwen-code@latest
 
 # 3. 安装 bun 和 qmd
 RUN curl -fsSL https://bun.sh/install | BUN_INSTALL=/usr/local bash && \
