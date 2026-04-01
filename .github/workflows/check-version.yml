@@ -39,7 +39,7 @@ jobs:
 
       - name: 检出代码
         if: steps.branch-check.outputs.is_dev == 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 1
 
