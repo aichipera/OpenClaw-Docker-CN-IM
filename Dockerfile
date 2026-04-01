@@ -63,7 +63,7 @@ RUN pipx install 'markitdown[all]' && \
   timeout 300 openclaw plugins install @sunnoy/wecom@latest || true && \
   find /home/node/.openclaw/extensions -name ".git" -type d -exec rm -rf {} + && \
   rm -rf /home/node/.openclaw/qqbot/.git && \
-  rm -rf /tmp/* /home/node/.npm /home/node/.cache
+  rm -rf /home/node/.npm /home/node/.cache
   
 # 3. 最终配置
 USER root
