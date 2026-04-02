@@ -2,12 +2,14 @@
 # Stage 1: Builder - 安装系统依赖和构建工具
 FROM debian:bookworm-slim AS builder
 
-# 安装构建依赖
+# 安装构建依赖和 CA 证书
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential \
     curl \
     git \
+    ca-certificates \
+    unzip \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
