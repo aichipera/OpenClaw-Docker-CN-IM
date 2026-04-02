@@ -96,7 +96,7 @@ FROM npm-deps AS user-setup
 
 # 创建用户目录
 RUN mkdir -p /home/node/.openclaw/workspace /home/node/.openclaw/extensions && \
-    useradd -m -u 1000 -s /bin/bash node && \
+    id node &>/dev/null || useradd -m -u 1000 -s /bin/bash node && \
     chown -R node:node /home/node
 
 USER node
