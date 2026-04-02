@@ -190,7 +190,7 @@ services:
     user: ${OPENCLAW_RUN_USER:-0:0}
     environment: *openclaw-common-env
     volumes:
-      - ${OPENCLAW_DATA_DIR}:/home/node/.openclaw
+      - ${OPENCLAW_DATA_DIR:-./data}:/home/node/.openclaw
       # 使用命名卷共享 extensions，确保工具容器安装后的插件主容器可见
       - openclaw-extensions:/home/node/.openclaw/extensions
       # 沙箱支持：如需启用 Docker 沙箱，请取消下面一行的注释并确保 .env 中 OPENCLAW_SANDBOX_MODE 不为 off
@@ -220,7 +220,7 @@ services:
     user: ${OPENCLAW_RUN_USER:-0:0}
     environment: *openclaw-common-env
     volumes:
-      - ${OPENCLAW_DATA_DIR}:/home/node/.openclaw
+      - ${OPENCLAW_DATA_DIR:-./data}:/home/node/.openclaw
       - openclaw-extensions:/home/node/.openclaw/extensions
     entrypoint: ["tail", "-f", "/dev/null"]
     init: true
