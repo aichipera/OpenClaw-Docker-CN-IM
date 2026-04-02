@@ -11,7 +11,7 @@
 | [`.env.example`](../.env.example) | 环境变量模板，复制为 `.env` 后使用 |
 | [`docker-compose.yml`](../docker-compose.yml) | 把环境变量注入容器并定义卷、端口、服务 |
 | [`openclaw.json.example`](../openclaw.json.example) | OpenClaw 配置结构示例，用于理解最终生成结果 |
-| [`init.sh`](../init.sh) | 启动时读取环境变量并生成 / 修正实际配置 |
+| [`scripts/init.sh`](../scripts/init.sh) | 启动时读取环境变量并生成 / 修正实际配置 |
 
 默认情况下，容器首次启动时会根据环境变量自动生成 `openclaw.json`。如果你已经手动维护该文件，建议同时关注 [`SYNC_MODEL_CONFIG`](../.env.example) 的行为。
 
@@ -168,7 +168,7 @@ IMAGE_MODEL_ID=aliyun/qwen-vl-max
 默认设计是：
 
 1. 容器先以 root 启动
-2. [`init.sh`](../init.sh) 尝试修复挂载目录权限
+2. [`scripts/init.sh`](../scripts/init.sh) 尝试修复挂载目录权限
 3. 再以更合适的用户运行 OpenClaw
 
 ### 安全建议

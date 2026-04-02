@@ -61,6 +61,6 @@ docker run -d \
 ## 适合查看的相关文件
 
 - 镜像构建：[`Dockerfile`](../Dockerfile)
-- 启动逻辑：[`init.sh`](../init.sh)
+- 启动逻辑：[`scripts/init.sh`](../scripts/init.sh)
 - Compose 编排：[`docker-compose.yml`](../docker-compose.yml)
 - 配置模板：[`docs/configuration.md`](configuration.md)

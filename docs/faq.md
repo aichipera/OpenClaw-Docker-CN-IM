@@ -1,6 +1,6 @@
 # 常见问题
 
-本文汇总 [`OpenClaw-Docker-CN-IM`](../README.md) 当前版本的高频问题与排查建议，内容以 [`docker-compose.yml`](../docker-compose.yml)、[`.env.example`](../.env.example)、[`init.sh`](../init.sh) 与仓库内现有说明为准。
+本文汇总 [`OpenClaw-Docker-CN-IM`](../README.md) 当前版本的高频问题与排查建议，内容以 [`docker-compose.yml`](../docker-compose.yml)、[`.env.example`](../.env.example)、[`scripts/init.sh`](../scripts/init.sh) 与仓库内现有说明为准。
 
 ## 修改了环境变量，但配置没有按预期生效
 
@@ -10,7 +10,7 @@
 
 ### 原因
 
-当前项目并不是“仅在配置文件不存在时才初始化一次”。容器启动时会执行 [`init.sh`](../init.sh)，并根据当前环境变量同步模型、渠道、插件、Gateway 等配置到 `openclaw.json`。
+当前项目并不是“仅在配置文件不存在时才初始化一次”。容器启动时会执行 [`scripts/init.sh`](../scripts/init.sh)，并根据当前环境变量同步模型、渠道、插件、Gateway 等配置到 `openclaw.json`。
 
 但以下情况仍会让你感觉“没有生效”：
 
@@ -61,7 +61,7 @@ docker compose restart openclaw-gateway
 
 ### 原因
 
-[`init.sh`](../init.sh) 会根据是否提供了“必需环境变量”来启用或禁用渠道。
+[`scripts/init.sh`](../scripts/init.sh) 会根据是否提供了“必需环境变量”来启用或禁用渠道。
 
 例如：
 
@@ -233,7 +233,7 @@ PRIMARY_MODEL=aliyun/qwen3.5-plus
 IMAGE_MODEL_ID=default/qwen3.5-plus
 ```
 
-相关规则见 [`docs/configuration.md`](configuration.md) 与 [`init.sh`](../init.sh)。
+相关规则见 [`docs/configuration.md`](configuration.md) 与 [`scripts/init.sh`](../scripts/init.sh)。
 
 ---
 
@@ -244,7 +244,7 @@ IMAGE_MODEL_ID=default/qwen3.5-plus
 ### 当前项目的处理方式
 
 - 默认允许容器先以 root 启动
-- [`init.sh`](../init.sh) 会尝试修复 `/home/node/.openclaw` 权限
+- [`scripts/init.sh`](../scripts/init.sh) 会尝试修复 `/home/node/.openclaw` 权限
 - 修复完成后，再以 `node` 用户启动 OpenClaw Gateway
 
 ### 常见原因
@@ -294,7 +294,7 @@ su node
 
 ## 日志里提示 JSON 非法或配置冲突
 
-当前版本的 [`init.sh`](../init.sh) 会对部分历史格式做兼容迁移，也会自动校验多账号冲突。
+当前版本的 [`scripts/init.sh`](../scripts/init.sh) 会对部分历史格式做兼容迁移，也会自动校验多账号冲突。
 
 常见报错包括：
 
