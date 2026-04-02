@@ -53,6 +53,8 @@ RUN apt-get update && \
     locales \
     netcat-openbsd \
     openssh-client \
+    pandoc \
+    pipx \
     sqlite3 \
     tini \
     unzip \
@@ -73,11 +75,6 @@ RUN ln -sf /usr/local/python312/bin/python3 /usr/local/bin/python3 && \
     ln -sf /usr/local/python312/bin/python3 /usr/local/bin/python && \
     find /usr/local/python312 -name EXTERNALLY-MANAGED -delete && \
     /usr/local/bin/python3 -m pip install --no-cache-dir --break-system-packages websockify
-
-# 安装 Python 包管理工具
-RUN python3 -m pip install --no-cache-dir --break-system-packages pipx && \
-    pipx install pipx && \
-    pipx inject pipx podinfo 2>/dev/null || true
 
 # Stage 3: npm packages
 FROM base AS npm-deps
@@ -104,9 +101,8 @@ ENV HOME=/home/node
 ENV PATH="/home/node/.local/bin:$PATH"
 WORKDIR /home/node
 
-# 安装用户级工具
 RUN pipx install 'markitdown[all]' && \
-    pipx install ddgs[api]
+    pipx install 'ddgs[api]'
 
 # 安装 Linuxbrew
 RUN mkdir -p /home/node/.linuxbrew/Homebrew && \
