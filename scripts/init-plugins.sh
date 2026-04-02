@@ -49,7 +49,7 @@ sync_seed_extensions() {
             echo "=== 同步内置插件（强制覆盖） ==="
             # 仅删除 seed 中存在的同名项，以保留用户自行添加的其他插件
             find "$seed_dir" -mindepth 1 -maxdepth 1 ! -name '.seed-version' | while IFS= read -r seed_item; do
-                rm -rf "$target_dir/$(basename "$seed_item")"
+                rm -rf "${target_dir:?}/$(basename "$seed_item")"
             done
             cp -a "$seed_dir"/. "$target_dir"/
             ;;
@@ -82,7 +82,7 @@ sync_seed_extensions() {
             fi
             # 仅删除 seed 中存在的同名项，以保留用户自行添加的其他插件
             find "$seed_dir" -mindepth 1 -maxdepth 1 ! -name '.seed-version' | while IFS= read -r seed_item; do
-                rm -rf "$target_dir/$(basename "$seed_item")"
+                rm -rf "${target_dir:?}/$(basename "$seed_item")"
             done
             cp -a "$seed_dir"/. "$target_dir"/
             ;;

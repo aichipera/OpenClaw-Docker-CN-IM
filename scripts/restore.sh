@@ -32,9 +32,7 @@ echo "  备份文件: $ARCHIVE"
 echo "  目标目录: $TARGET_DIR"
 
 mkdir -p "$TARGET_DIR"
-tar -xzf "$ARCHIVE" -C "$TARGET_DIR"
-
-if [ $? -eq 0 ]; then
+if tar -xzf "$ARCHIVE" -C "$TARGET_DIR"; then
     echo "✅ 恢复完成: $TARGET_DIR"
 else
     echo "❌ 恢复失败"
