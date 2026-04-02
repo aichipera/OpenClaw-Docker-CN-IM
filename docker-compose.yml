@@ -200,6 +200,17 @@ services:
       - "${DOCKER_BIND:-0.0.0.0}:${OPENCLAW_BRIDGE_PORT}:${OPENCLAW_BRIDGE_PORT}"
     init: true
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/localhost/${OPENCLAW_GATEWAY_PORT:-18789}'"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
 
   openclaw-installer:
     container_name: openclaw-installer

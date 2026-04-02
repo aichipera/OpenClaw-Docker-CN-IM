@@ -132,9 +132,15 @@ RUN cd /home/node/.openclaw/extensions && \
 USER root
 
 # 复制初始化脚本并确保换行符为 LF
-COPY ./init.sh /usr/local/bin/init.sh
-RUN sed -i 's/\r$//' /usr/local/bin/init.sh && \
-    chmod +x /usr/local/bin/init.sh
+COPY ./scripts/init.sh /usr/local/bin/init.sh
+COPY ./scripts/init-utils.sh /usr/local/bin/init-utils.sh
+COPY ./scripts/init-permissions.sh /usr/local/bin/init-permissions.sh
+COPY ./scripts/init-plugins.sh /usr/local/bin/init-plugins.sh
+COPY ./scripts/init-config.sh /usr/local/bin/init-config.sh
+COPY ./scripts/init-agent-reach.sh /usr/local/bin/init-agent-reach.sh
+COPY ./scripts/openclaw-config /usr/local/bin/openclaw-config
+RUN sed -i 's/\r$//' /usr/local/bin/init*.sh && \
+    chmod +x /usr/local/bin/init*.sh
 
 # 设置环境变量
 ENV HOME=/home/node \

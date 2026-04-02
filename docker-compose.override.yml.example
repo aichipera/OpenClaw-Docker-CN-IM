@@ -1,0 +1,49 @@
+# OpenClaw Docker Compose 自定义覆盖配置
+# 使用方式：复制此文件为 docker-compose.override.yml，然后根据需要修改
+# Docker Compose 会自动合并 docker-compose.yml 和 docker-compose.override.yml
+
+# 示例：自定义资源限制
+# services:
+#   openclaw-gateway:
+#     deploy:
+#       resources:
+#         limits:
+#           memory: 2G
+#           cpus: '2.0'
+
+# 示例：启用 Docker 沙箱
+# services:
+#   openclaw-gateway:
+#     volumes:
+#       - /var/run/docker.sock:/var/run/docker.sock
+#     environment:
+#       - OPENCLAW_SANDBOX_MODE=all
+
+# 示例：自定义日志配置
+# services:
+#   openclaw-gateway:
+#     logging:
+#       driver: "json-file"
+#       options:
+#         max-size: "10m"
+#         max-file: "3"
+
+# 示例：自定义端口绑定
+# services:
+#   openclaw-gateway:
+#     ports:
+#       - "8080:18789"
+#       - "8081:18790"
+
+# 示例：添加自定义环境变量
+# services:
+#   openclaw-gateway:
+#     environment:
+#       - DEBUG=true
+#       - CUSTOM_VAR=value
+
+# 示例：添加自定义卷挂载
+# services:
+#   openclaw-gateway:
+#     volumes:
+#       - ./custom-plugins:/home/node/.openclaw/extensions/custom:ro

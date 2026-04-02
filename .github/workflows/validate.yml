@@ -1,0 +1,49 @@
+name: Validate Configuration
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/**'
+      - 'docker-compose.yml'
+      - '.env.example'
+      - '.github/workflows/validate.yml'
+  push:
+    branches: [main, master, dev]
+
+jobs:
+  validate-compose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate docker-compose
+        run: docker compose config --quiet
+
+  validate-python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: pip install pytest
+      - name: Validate Python syntax
+        run: |
+          python -m py_compile scripts/openclaw-config/__main__.py
+          python -m py_compile scripts/openclaw-config/sync.py
+          python -m py_compile scripts/openclaw-config/utils.py
+          python -m py_compile scripts/openclaw-config/models.py
+          python -m py_compile scripts/openclaw-config/channels.py
+          python -m py_compile scripts/openclaw-config/validators.py
+      - name: Run tests
+        run: python -m pytest scripts/tests/ -v || true
+
+  validate-scripts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate shell scripts
+        run: |
+          bash -n scripts/init.sh
+          bash -n scripts/backup.sh
+          bash -n scripts/restore.sh

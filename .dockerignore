@@ -1,0 +1,36 @@
+# Git
+.git
+.gitignore
+
+# GitHub
+.github/workflows/*.md
+
+# Docs
+docs/
+LICENSE
+README.md
+sponsor.png
+
+# Config templates (not needed in build context)
+.env
+.env.example
+openclaw.json.example
+docker-compose.yml
+docker-compose.override.yml.example
+
+# Development
+*.md
+*.log
+*.tmp
+
+# Scripts - exclude everything except init.sh and openclaw-config/
+scripts/README.md
+scripts/tests/
+scripts/*.md
+
+# Cache
+.npm/
+.cache/
+*.pyc
+__pycache__/
+.pytest_cache/
