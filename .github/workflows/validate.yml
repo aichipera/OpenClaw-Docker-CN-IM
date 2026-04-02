@@ -15,39 +15,37 @@ jobs:
   validate-compose:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Validate docker-compose
-        run: docker compose config --quiet
+        run: docker compose config
 
   validate-dockerfile:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: hadolint/hadolint-action@v3
+      - uses: actions/checkout@v5
+      - uses: hadolint/hadolint-action@v3.3.0
         with:
           dockerfile: Dockerfile
 
   validate-python:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
       - name: Install dependencies
         run: pip install pytest
       - name: Validate Python syntax
-        run: |
-          find scripts/openclaw-config -name "*.py" -exec python -m py_compile {} + || exit 1
+        run: find scripts/openclaw-config -name "*.py" -exec python -m py_compile {} +
       - name: Run tests
         run: python -m pytest scripts/tests/ -v
 
   validate-scripts:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Install shellcheck
-        run: apt-get update && apt-get install -y shellcheck
-      - name: Validate shell scripts
-        run: |
-          shellcheck scripts/init.sh scripts/init-utils.sh scripts/init-permissions.sh scripts/init-plugins.sh scripts/init-config.sh scripts/init-agent-reach.sh scripts/backup.sh scripts/restore.sh
+      - uses: actions/checkout@v5
+      - uses: ludeeus/action-shellcheck@2.0.0
+        with:
+          scanpath: scripts/
+          shellcheck_flags: 'scripts/init.sh scripts/init-utils.sh scripts/init-permissions.sh scripts/init-plugins.sh scripts/init-config.sh scripts/init-agent-reach.sh scripts/backup.sh scripts/restore.sh'
