@@ -95,6 +95,14 @@
       "compaction": {
         "mode": "safeguard"
       },
+      "sandbox": {
+        "mode": "off",
+        "scope": "agent",
+        "workspaceAccess": "none",
+        "docker": {
+          "image": "openclaw-sandbox:bookworm-slim"
+        }
+      },
       "elevatedDefault": "full",
       "maxConcurrent": 4,
       "subagents": {
@@ -105,8 +113,19 @@
   "messages": {
     "ackReactionScope": "group-mentions",
     "tts": {
-      "edge": {
-        "voice": "zh-CN-XiaoxiaoNeural"
+      "auto": "off",
+      "mode": "final",
+      "provider": "edge",
+      "providers": {
+        "edge": {
+          "voice": "zh-CN-XiaoxiaoNeural",
+          "lang": "zh-CN",
+          "outputFormat": "ogg-24khz-16bit-mono-opus",
+          "pitch": "+0Hz",
+          "rate": "+0%",
+          "volume": "+0%",
+          "timeoutMs": 30000
+        }
       }
     }
   },
@@ -114,24 +133,63 @@
     "native": "auto",
     "nativeSkills": "auto"
   },
+  "tools": {
+    "profile": "full",
+    "sessions": {
+      "visibility": "all"
+    },
+    "fs": {
+      "workspaceOnly": true
+    }
+  },
   "channels": {
     "telegram": {
-      "dmPolicy": "pairing",
+      "dmPolicy": "open",
+      "allowFrom": ["*"],
       "botToken": "your-token",
-      "groupPolicy": "allowlist",
-      "streamMode": "partial"
+      "groupPolicy": "open",
+      "streaming": "partial"
     },
     "feishu": {
       "enabled": true,
-      "dmPolicy": "pairing",
+      "dmPolicy": "open",
+      "allowFrom": [
+        "*"
+      ],
       "groupPolicy": "open",
+      "streaming": true,
+      "requireMention": true,
       "accounts": {
         "default": {
           "appId": "your-app-id",
           "appSecret": "your-app-secret",
-          "botName": "OpenClaw Bot"
+          "name": "OpenClaw Bot"
+        },
+        "work": {
+          "appId": "cli_work_yyy",
+          "appSecret": "work_secret_yyy",
+          "name": "工作机器人"
+        },
+        "support": {
+          "appId": "cli_support_zzz",
+          "appSecret": "support_secret_zzz",
+          "name": "客服机器人"
         }
-      }
+      },
+      "appId": "your-app-id",
+      "appSecret": "your-app-secret",
+      "groupAllowFrom": [
+
+      ],
+      "groups": {
+        "*": {
+          "requireMention": true
+        },
+        "oc_dev_123456789": {
+          "requireMention": false
+        }
+      },
+      "defaultAccount": "default"
     },
     "dingtalk": {
       "enabled": true,
@@ -144,37 +202,100 @@
       "allowFrom": ["*"],
       "groupPolicy": "open",
       "messageType": "markdown",
-      "debug": false
+      "journalTTLDays": 7,
+      "showThinking": true,
+      "thinkingMessage": "🤔 思考中，请稍候...",
+      "asyncMode": false,
+      "asyncAckText": "已收到，正在处理中，稍后回复。",
+      "debug": false,
+      "accounts": {
+        "default": {
+          "clientId": "dingxxxxxx",
+          "clientSecret": "your-app-secret",
+          "robotCode": "dingxxxxxx",
+          "corpId": "dingxxxxxx",
+          "agentId": "123456789",
+          "dmPolicy": "open",
+          "groupPolicy": "open",
+          "messageType": "markdown",
+          "allowFrom": ["*"]
+        },
+        "bot_1": {
+          "clientId": "your-client-id-1",
+          "clientSecret": "your-client-secret-1",
+          "robotCode": "your-robot-code-1",
+          "corpId": "your-corp-id",
+          "agentId": "your-dingtalk-agent-id-1",
+          "dmPolicy": "open",
+          "groupPolicy": "open",
+          "messageType": "card",
+          "cardTemplateId": "your-card-template-id.schema",
+          "cardTemplateKey": "content",
+          "maxReconnectCycles": 10,
+          "allowFrom": ["*"]
+        },
+        "bot_2": {
+          "clientId": "your-client-id-2",
+          "clientSecret": "your-client-secret-2",
+          "robotCode": "your-robot-code-2",
+          "corpId": "your-corp-id",
+          "agentId": "your-dingtalk-agent-id-2",
+          "dmPolicy": "open",
+          "groupPolicy": "open",
+          "messageType": "markdown",
+          "allowFrom": ["*"]
+        }
+      }
     },
     "qqbot": {
       "enabled": true,
       "appId": "your-qqbot-app-id",
-      "clientSecret": "your-qqbot-client-secret"
+      "clientSecret": "your-qqbot-client-secret",
+      "dmPolicy": "open",
+      "allowFrom": ["*"],
+      "groupPolicy": "open",
+      "accounts": {
+        "default": {
+          "enabled": true,
+          "appId": "111111111",
+          "clientSecret": "secret-of-bot-1"
+        },
+        "bot2": {
+          "enabled": true,
+          "appId": "222222222",
+          "clientSecret": "secret-of-bot-2"
+        },
+        "bot3": {
+          "enabled": true,
+          "appId": "333333333",
+          "clientSecret": "secret-of-bot-3"
+        }
+      }
     },
     "wecom": {
       "enabled": true,
-      "bot1": {
-        "token": "Bot1 的 Token",
-        "encodingAesKey": "Bot1 的 EncodingAESKey",
-        "adminUsers": ["admin1"],
+      "defaultAccount": "open",
+      "adminUsers": ["admin-userid"],
+      "commands": {
+        "enabled": true,
+        "allowlist": ["/new", "/compact", "/help", "/status"]
+      },
+      "open": {
+        "botId": "aib-open-xxx",
+        "secret": "secret-open-xxx",
+        "dmPolicy": "open"
+      },
+      "support": {
+        "botId": "aib-support-xxx",
+        "secret": "secret-support-xxx",
+        "dmPolicy": "pairing",
         "agent": {
-          "corpId": "企业 CorpID",
-          "corpSecret": "Bot1 应用 Secret",
-          "agentId": 1000001,
-          "token": "Bot1 回调 Token",
-          "encodingAesKey": "Bot1 回调 EncodingAESKey"
+          "corpId": "wwxxxxxxxxxxxxxxxx",
+          "corpSecret": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "agentId": 1000002
         },
         "webhooks": {
-          "ops-group": "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=xxx"
-        }
-      },
-      "bot2": {
-        "token": "Bot2 的 Token",
-        "encodingAesKey": "Bot2 的 EncodingAESKey",
-        "agent": {
-          "corpId": "企业 CorpID",
-          "corpSecret": "Bot2 应用 Secret",
-          "agentId": 1000002
+          "ops": "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=xxx"
         }
       }
     }
@@ -242,7 +363,21 @@
   },
   "memory": {
     "backend": "qmd",
+    "citations": "auto",
     "qmd": {
+      "includeDefaultMemory": true,
+      "sessions": {
+        "enabled": true
+      },
+      "limits": {
+        "timeoutMs": 8000,
+        "maxResults": 16
+      },
+      "update": {
+        "onBoot": true,
+        "interval": "5m",
+        "debounceMs": 15000
+      },
       "command": "/usr/local/bin/qmd",
       "paths": [
         {
