@@ -5,6 +5,7 @@ on:
     paths:
       - 'scripts/**'
       - 'docker-compose.yml'
+      - 'Dockerfile'
       - '.env.example'
       - '.github/workflows/validate.yml'
   push:
@@ -18,6 +19,14 @@ jobs:
       - name: Validate docker-compose
         run: docker compose config --quiet
 
+  validate-dockerfile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hadolint/hadolint-action@v3
+        with:
+          dockerfile: Dockerfile
+
   validate-python:
     runs-on: ubuntu-latest
     steps:
@@ -29,21 +38,16 @@ jobs:
         run: pip install pytest
       - name: Validate Python syntax
         run: |
-          python -m py_compile scripts/openclaw-config/__main__.py
-          python -m py_compile scripts/openclaw-config/sync.py
-          python -m py_compile scripts/openclaw-config/utils.py
-          python -m py_compile scripts/openclaw-config/models.py
-          python -m py_compile scripts/openclaw-config/channels.py
-          python -m py_compile scripts/openclaw-config/validators.py
+          find scripts/openclaw-config -name "*.py" -exec python -m py_compile {} + || exit 1
       - name: Run tests
-        run: python -m pytest scripts/tests/ -v || true
+        run: python -m pytest scripts/tests/ -v
 
   validate-scripts:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install shellcheck
+        run: apt-get update && apt-get install -y shellcheck
       - name: Validate shell scripts
         run: |
-          bash -n scripts/init.sh
-          bash -n scripts/backup.sh
-          bash -n scripts/restore.sh
+          shellcheck scripts/init.sh scripts/init-utils.sh scripts/init-permissions.sh scripts/init-plugins.sh scripts/init-config.sh scripts/init-agent-reach.sh scripts/backup.sh scripts/restore.sh
