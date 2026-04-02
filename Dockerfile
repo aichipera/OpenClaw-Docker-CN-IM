@@ -44,12 +44,15 @@ RUN apt-get update && \
     curl -fsSL https://bun.sh/install | BUN_INSTALL=/usr/local bash && \
     curl -LsSf https://astral.sh/uv/install.sh | env UV_INSTALL_DIR=/usr/local/bin sh && \
     uv python install 3.12 && \
-    # 将 uv 管理的 python 复制到全局目录，确保 node 用户也可访问
+    # 将 uv 管理的 python 移动到全局目录，确保 node 用户也可访问
     PYTHON_PATH=$(uv python find 3.12) && \
-    cp -ra $(dirname $(dirname "$PYTHON_PATH")) /usr/local/python312 && \
+    PYTHON_ROOT=$(dirname $(dirname "$PYTHON_PATH")) && \
+    mv "$PYTHON_ROOT" /usr/local/python312 && \
     ln -sf /usr/local/python312/bin/python3 /usr/local/bin/python3 && \
     ln -sf /usr/local/python312/bin/python3 /usr/local/bin/python && \
-    uv pip install --system websockify && \
+    # 移除 EXTERNALLY-MANAGED 限制并安装 websockify
+    find /usr/local/python312 -name EXTERNALLY-MANAGED -delete && \
+    /usr/local/bin/python3 -m pip install --no-cache-dir websockify && \
     npm install -g @tobilu/qmd@1.1.6 && \
     # 安装 Playwright 浏览器依赖
     npx playwright install chromium --with-deps && \
