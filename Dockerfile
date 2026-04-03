@@ -113,17 +113,18 @@ RUN mkdir -p /home/node/.linuxbrew/Homebrew && \
     chmod -R g+rwX /home/node/.linuxbrew
 
 # 安装插件
-RUN cd /home/node/.openclaw/extensions && \
+RUN mkdir -p /home/node/.openclaw/extensions && \
+    chown -R node:node /home/node/.openclaw && \
+    cd /home/node/.openclaw/extensions && \
     git clone --depth 1 -b v4.17.25 https://github.com/Daiyimo/openclaw-napcat.git napcat && \
     cd napcat && \
     npm install --production && \
-    timeout 300 openclaw plugins install -l . --dangerouslyForceUnsafeInstall || true && \
+    timeout 300 openclaw plugins install -l . --dangerously-force-unsafe-install || true && \
     cd /home/node/.openclaw/extensions && \
-    timeout 300 openclaw plugins install @soimy/dingtalk --dangerouslyForceUnsafeInstall || true && \
-    timeout 300 openclaw plugins install @tencent-connect/openclaw-qqbot@latest --dangerouslyForceUnsafeInstall || true && \
-    timeout 300 openclaw plugins install @sunnoy/wecom --dangerouslyForceUnsafeInstall || true && \
+    timeout 300 openclaw plugins install @soimy/dingtalk --dangerously-force-unsafe-install || true && \
+    timeout 300 openclaw plugins install @tencent-connect/openclaw-qqbot@latest --dangerously-force-unsafe-install || true && \
+    timeout 300 openclaw plugins install @sunnoy/wecom --dangerously-force-unsafe-install || true && \
     mkdir -p /home/node/.openclaw-seed && \
-    chown -R node:node /home/node/.openclaw-seed && \
     find /home/node/.openclaw/extensions -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true && \
     mv /home/node/.openclaw/extensions /home/node/.openclaw-seed/ && \
     printf '%s\n' '2026.4.1' > /home/node/.openclaw-seed/extensions/.seed-version && \
