@@ -40,7 +40,7 @@ RUN apt-get update && \
     bash \
     bat \
     ca-certificates \
-    chromium \
+    chromium-browser \
     curl \
     ffmpeg \
     fonts-liberation \
@@ -117,13 +117,14 @@ RUN cd /home/node/.openclaw/extensions && \
     git clone --depth 1 -b v4.17.25 https://github.com/Daiyimo/openclaw-napcat.git napcat && \
     cd napcat && \
     npm install --production && \
-    timeout 300 openclaw plugins install -l . || true && \
+    timeout 300 openclaw plugins install -l . --dangerouslyForceUnsafeInstall || true && \
     cd /home/node/.openclaw/extensions && \
-    timeout 300 openclaw plugins install @soimy/dingtalk || true && \
-    timeout 300 openclaw plugins install @tencent-connect/openclaw-qqbot@latest || true && \
-    timeout 300 openclaw plugins install @sunnoy/wecom || true && \
-    mkdir -p /home/node/.openclaw /home/node/.openclaw-seed && \
-    find /home/node/.openclaw/extensions -name ".git" -type d -exec rm -rf {} + && \
+    timeout 300 openclaw plugins install @soimy/dingtalk --dangerouslyForceUnsafeInstall || true && \
+    timeout 300 openclaw plugins install @tencent-connect/openclaw-qqbot@latest --dangerouslyForceUnsafeInstall || true && \
+    timeout 300 openclaw plugins install @sunnoy/wecom --dangerouslyForceUnsafeInstall || true && \
+    mkdir -p /home/node/.openclaw-seed && \
+    chown -R node:node /home/node/.openclaw-seed && \
+    find /home/node/.openclaw/extensions -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true && \
     mv /home/node/.openclaw/extensions /home/node/.openclaw-seed/ && \
     printf '%s\n' '2026.4.1' > /home/node/.openclaw-seed/extensions/.seed-version && \
     rm -rf /tmp/* /home/node/.npm /home/node/.cache
