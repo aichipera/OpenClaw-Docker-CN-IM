@@ -40,7 +40,7 @@ RUN apt-get update && \
     bash \
     bat \
     ca-certificates \
-    chromium-browser \
+    chromium \
     curl \
     ffmpeg \
     fonts-liberation \
