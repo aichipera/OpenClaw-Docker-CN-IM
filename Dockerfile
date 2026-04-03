@@ -142,7 +142,7 @@ COPY ./scripts/init-permissions.sh /usr/local/bin/init-permissions.sh
 COPY ./scripts/init-plugins.sh /usr/local/bin/init-plugins.sh
 COPY ./scripts/init-config.sh /usr/local/bin/init-config.sh
 COPY ./scripts/init-agent-reach.sh /usr/local/bin/init-agent-reach.sh
-COPY ./scripts/openclaw_config /usr/local/python312/lib/python3.12/site-packages/openclaw_config
+COPY ./scripts/openclaw_config /usr/local/bin/openclaw_config
 
 RUN sed -i 's/\r$//' /usr/local/bin/init*.sh && \
     chmod +x /usr/local/bin/init*.sh

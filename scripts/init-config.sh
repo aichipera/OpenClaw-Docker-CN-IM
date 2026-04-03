@@ -163,7 +163,9 @@ sync_config_with_env() {
     local config_file="$OPENCLAW_HOME/openclaw.json"
     ensure_base_config
     echo "正在根据当前环境变量同步配置状态..."
-    CONFIG_FILE="$config_file" python3 -m openclaw_config sync
+    local _script_dir
+    _script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    CONFIG_FILE="$config_file" PYTHONPATH="$_script_dir" python3 -m openclaw_config sync
 }
 
 normalize_sync_check() {
