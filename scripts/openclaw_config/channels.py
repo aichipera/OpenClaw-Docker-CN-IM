@@ -269,6 +269,7 @@ def migrate_feishu_config(channels: dict) -> None:
         if default_account.get('appSecret'):
             feishu['appSecret'] = default_account['appSecret']
 
+    normalize_feishu_config(channels)
 
 def merge_wecom_accounts_from_env(channels: dict, env: dict) -> None:
     wecom = channels.get('wecom')

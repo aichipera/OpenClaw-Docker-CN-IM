@@ -41,7 +41,7 @@ jobs:
       - name: Validate Python syntax
         run: |
           export PYTHONPATH=${{ github.workspace }}/scripts:$PYTHONPATH
-          find scripts/openclaw-config -name "*.py" -exec python -m py_compile {} +
+          find scripts/openclaw_config -name "*.py" -exec python -m py_compile {} +
       - name: Run tests
         run: |
           export PYTHONPATH=${{ github.workspace }}/scripts:$PYTHONPATH

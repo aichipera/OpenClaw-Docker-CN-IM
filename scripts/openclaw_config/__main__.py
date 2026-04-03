@@ -26,7 +26,7 @@ def main():
     sync_parser = subparsers.add_parser("sync", help="同步配置")
     sync_parser.add_argument(
         "--config-file",
-        required=True,
+        required=False,
         help="配置文件路径"
     )
     sync_parser.add_argument(
@@ -38,14 +38,14 @@ def main():
     validate_parser = subparsers.add_parser("validate", help="验证配置")
     validate_parser.add_argument(
         "--config-file",
-        required=True,
+        required=False,
         help="配置文件路径"
     )
 
     migrate_parser = subparsers.add_parser("migrate", help="迁移配置")
     migrate_parser.add_argument(
         "--config-file",
-        required=True,
+        required=False,
         help="配置文件路径"
     )
 
@@ -55,13 +55,18 @@ def main():
         parser.print_help()
         return 1
 
-    config_path = Path(args.config_file)
+    import os
+    config_file = args.config_file or os.environ.get('CONFIG_FILE')
+    if not config_file:
+        print(f"错误: 未指定配置文件路径，请通过 --config-file 参数或 CONFIG_FILE 环境变量提供", file=sys.stderr)
+        return 1
+
+    config_path = Path(config_file)
     if not config_path.exists():
         print(f"错误: 配置文件不存在: {config_path}", file=sys.stderr)
         return 1
 
     if args.command == "sync":
-        import os
         os.environ['CONFIG_FILE'] = str(config_path)
         sync()
     elif args.command == "validate":
@@ -70,7 +75,6 @@ def main():
         print("迁移功能开发中...")
 
     return 0
-
 
 if __name__ == "__main__":
     sys.exit(main())

@@ -1,5 +1,6 @@
+import re
 from dataclasses import dataclass, field
-from typing import List, Optional
+from typing import Any, List, Optional
 
 
 @dataclass
@@ -26,9 +27,7 @@ class OpenClawConfig:
     channels: dict = field(default_factory=dict)
 
 
-import re
-from typing import Any, Optional
-
+WECOM_ACCOUNT_ID_RE = re.compile(r'^[a-z0-9_-]+$')
 
 WECOM_ACCOUNT_ID_RE = re.compile(r'^[a-z0-9_-]+$')
 
