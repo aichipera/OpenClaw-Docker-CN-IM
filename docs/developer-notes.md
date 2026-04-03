@@ -9,7 +9,7 @@
 | [`Dockerfile`](../Dockerfile) | Docker 镜像构建定义（多阶段构建） |
 | [`scripts/init.sh`](../scripts/init.sh) | 容器主入口脚本（orchestration 层） |
 | [`scripts/init-*.sh`](../scripts/) | 模块化初始化脚本 |
-| [`scripts/openclaw-config/`](../scripts/openclaw-config) | Python 配置管理模块 |
+| [`scripts/openclaw_config/`](../scripts/openclaw_config) | Python 配置管理模块 |
 | [`docker-compose.yml`](../docker-compose.yml) | 默认部署编排 |
 | [`.env.example`](../.env.example) | 环境变量模板 |
 | [`openclaw.json.example`](../openclaw.json.example) | 默认配置结构示例 |
@@ -84,7 +84,7 @@ Dockerfile 采用 5 阶段构建优化：
 
 ## Python 配置模块
 
-`scripts/openclaw-config/` 提供配置管理功能：
+`scripts/openclaw_config/` 提供配置管理功能：
 
 ```bash
 # 独立运行配置同步

@@ -1,1 +1,1 @@
-"""Test package for openclaw-config"""
+"""Test package for openclaw_config"""
