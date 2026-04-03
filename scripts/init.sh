@@ -55,6 +55,7 @@ start_gateway() {
         AGENT_REACH_VENV_HOME="/home/node/.agent-reach-venv" \
         PATH="/home/node/.agent-reach-venv/bin:/usr/local/bin:$PATH" \
         openclaw gateway run \
+        --allow-unconfigured \
         --bind "$OPENCLAW_GATEWAY_BIND" \
         --port "$OPENCLAW_GATEWAY_PORT" \
         --token "$OPENCLAW_GATEWAY_TOKEN" \

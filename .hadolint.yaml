@@ -1,0 +1,10 @@
+ignored:
+  - DL3008  # Pin versions in apt-get install
+  - DL4006  # Set SHELL option -o pipefail
+  - DL3016  # Pin versions in npm
+  - DL3059  # Multiple consecutive RUN instructions
+  - DL3013  # Pin versions in pip
+  - DL3003  # Use WORKDIR to switch directory
+  - DL3002  # Last USER should not be root
+  - SC2046  # Quote to prevent word splitting
+  - SC3020  # &> is undefined in POSIX sh (Docker uses bash)

@@ -165,9 +165,8 @@ EXPOSE 18789 18790
 # 设置工作目录
 WORKDIR /home/node
 
-# 健康检查
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD bash -c 'echo > /dev/tcp/localhost/18789' || exit 1
+    CMD curl -f http://localhost:${OPENCLAW_GATEWAY_PORT:-18789}/ || exit 1
 
 # 入口点
 ENTRYPOINT ["/bin/bash", "/usr/local/bin/init.sh"]
