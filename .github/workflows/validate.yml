@@ -17,8 +17,10 @@ jobs:
     continue-on-error: true
     steps:
       - uses: actions/checkout@v5
+      - name: Prepare .env for validation
+        run: cp .env.example .env
       - name: Validate docker-compose syntax
-        run: docker compose config
+        run: docker compose config --quiet
 
   validate-dockerfile:
     runs-on: ubuntu-latest
@@ -54,5 +56,4 @@ jobs:
       - uses: actions/checkout@v5
       - uses: ludeeus/action-shellcheck@2.0.0
         with:
-          scanpath: scripts/
-          shellcheck_flags: 'scripts/init.sh scripts/init-utils.sh scripts/init-permissions.sh scripts/init-plugins.sh scripts/init-config.sh scripts/init-agent-reach.sh scripts/backup.sh scripts/restore.sh'
+          scandir: 'scripts/'

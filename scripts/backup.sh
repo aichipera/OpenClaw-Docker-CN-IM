@@ -1,7 +1,6 @@
 #!/bin/bash
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DATA_DIR="${1:-${OPENCLAW_DATA_DIR:-}}"
 OUTPUT_DIR="${2:-.}"
 
