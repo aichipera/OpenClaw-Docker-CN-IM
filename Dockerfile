@@ -128,7 +128,7 @@ RUN mkdir -p /home/node/.openclaw/extensions && \
     find /home/node/.openclaw/extensions -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true && \
     mv /home/node/.openclaw/extensions /home/node/.openclaw-seed/ && \
     printf '%s\n' '2026.4.1' > /home/node/.openclaw-seed/extensions/.seed-version && \
-    rm -rf /tmp/* /home/node/.npm /home/node/.cache
+    rm -rf /tmp/* /home/node/.npm /home/node/.cache 2>/dev/null || true
 
 # Stage 5: Final - 运行时配置
 FROM user-setup AS final
