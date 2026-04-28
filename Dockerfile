@@ -83,7 +83,7 @@ FROM base AS npm-deps
 RUN npm config set registry https://registry.npmmirror.com
 
 # 安装全局 npm 包
-RUN npm install -g openclaw@2026.4.24 opencode-ai@latest clawhub playwright playwright-extra puppeteer-extra-plugin-stealth @steipete/bird @qwen-code/qwen-code@latest @tobilu/qmd@1.1.6
+RUN npm install -g openclaw@2026.4.26 opencode-ai@latest clawhub playwright playwright-extra puppeteer-extra-plugin-stealth @steipete/bird @qwen-code/qwen-code@latest @tobilu/qmd@1.1.6
 
 # 安装 Playwright 浏览器
 RUN npx playwright install chromium --with-deps
